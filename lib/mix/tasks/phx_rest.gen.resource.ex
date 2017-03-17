@@ -1,12 +1,12 @@
-defmodule Mix.Tasks.PhoenixRest.Gen.Resource do
+defmodule Mix.Tasks.PhxRest.Gen.Resource do
   use Mix.Task
 
-  @shortdoc "Generates a PlugRest resource for Phoenix pre 1.3"
+  @shortdoc "Generates a PlugRest resource for Phoenix 1.3"
 
   @moduledoc """
   Generates a PlugRest resource in your Phoenix application.
 
-      mix phoenix_rest.gen.resource UserResource
+      mix phx_rest.gen.resource UserResource
 
   The generated resource will contain:
 
@@ -14,22 +14,24 @@ defmodule Mix.Tasks.PhoenixRest.Gen.Resource do
 
   The resources target directory can be changed with the option:
 
-      mix phoenix_rest.gen.resource UserResource --dir "lib/my_app/resources"
+      mix phx_rest.gen.resource UserResource --dir "lib/my_app/resources"
   """
   def run(args) do
-    no_umbrella!("phoenix_rest.gen.resource")
+    no_umbrella!("phx_rest.gen.resource")
 
     switches = [dir: :binary, use: :binary]
     {opts, parsed, _} = OptionParser.parse(args, switches: switches)
 
     resource =
       case parsed do
-        [] -> Mix.raise "phoenix_rest.gen.resource expects a Resource name to be given"
-        [resource] -> resource
-        [_ | _] -> Mix.raise "phoenix_rest.gen.resource expects a single Resource name"
+        [] -> Mix.raise "phx_rest.gen.resource expects a Resource name to be given"
+        [resource] -> "Web.#{resource}"
+        [_ | _] -> Mix.raise "phx_rest.gen.resource expects a single Resource name"
       end
 
-    default_opts = [dir: "web/resources", use: "PhoenixRest.Resource"]
+    app_name = Mix.Project.config |> Keyword.get(:app) |> Atom.to_string
+
+    default_opts = [dir: "./lib/#{app_name}/web/resources", use: "PhoenixRest.Resource"]
     opts = Keyword.merge(default_opts, opts)
 
     gen_args = [resource] ++ OptionParser.to_argv(opts)
