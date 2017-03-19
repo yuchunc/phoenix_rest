@@ -25,16 +25,22 @@ defmodule Mix.Tasks.PhxRest.Gen.Resource do
     resource =
       case parsed do
         [] -> Mix.raise "phx_rest.gen.resource expects a Resource name to be given"
-        [resource] -> "Web.#{resource}"
+        [resource] -> resource
         [_ | _] -> Mix.raise "phx_rest.gen.resource expects a single Resource name"
       end
 
+    module_name = "Web." <> resource
+
     app_name = Mix.Project.config |> Keyword.get(:app) |> Atom.to_string
 
-    default_opts = [dir: "./lib/#{app_name}/web/resources", use: "PhoenixRest.Resource"]
+    [Mix.Phoenix.base(), module_name]
+    |> Module.concat()
+    |> Mix.Phoenix.check_module_name_availability!()
+
+    default_opts = [path: "./lib/#{app_name}/web/resources/#{resource}.ex", use: "PhoenixRest.Resource"]
     opts = Keyword.merge(default_opts, opts)
 
-    gen_args = [resource] ++ OptionParser.to_argv(opts)
+    gen_args = [module_name] ++ OptionParser.to_argv(opts)
 
     Mix.Task.run("plug_rest.gen.resource", gen_args)
   end
