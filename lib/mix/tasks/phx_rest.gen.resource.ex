@@ -12,9 +12,9 @@ defmodule Mix.Tasks.PhxRest.Gen.Resource do
 
     * a resource file in web/resources
 
-  The resources target directory can be changed with the option:
+  The resource file path can be set with the option:
 
-      mix phx_rest.gen.resource UserResource --dir "lib/my_app/resources"
+      mix phx_rest.gen.resource UserResource --path "lib/my_app/resources"
   """
   def run(args) do
     no_umbrella!("phx_rest.gen.resource")
